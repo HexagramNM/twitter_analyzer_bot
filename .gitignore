@@ -1,0 +1,8 @@
+__pycache__
+old
+result
+account_history.txt
+error_log.txt
+processed_follower.txt
+processed_newest_id.txt
+secret.json
