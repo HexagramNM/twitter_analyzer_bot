@@ -1,6 +1,9 @@
 # twitter_analyzer_bot
 ツイッター分析bot（@twianaNM_bot）のソース．
 
+![ヒートマップ](https://github.com/HexagramNM/twitter_analyzer_bot/blob/master/HexagramNM_1.png)
+![棒グラフ](https://github.com/HexagramNM/twitter_analyzer_bot/blob/master/HexagramNM_2.png)
+
 実際の実行にはTwitter APIのアクセストークン等の情報や，データベース用のファイル"account_history.txt", 
 "processed_follower.txt", "processed_newest_id.txt", エラーログ用のファイル"error_log.txt"が必要．
 
