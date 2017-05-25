@@ -11,9 +11,9 @@ from twitter import *
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
 
-#ツイッターから渡される時間はグリニッジ時間なのでJSTに直す
+
 def main_func(twitterID):
-#initialize
+    # initialize
     n = 1000
     checknum = 0
     today = datetime.now()
@@ -25,7 +25,7 @@ def main_func(twitterID):
     monthl = np.array(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])
     day = 0
     hour = 0
-    #APIで取得可能な最大ツイート数（3200件）
+    # APIで取得可能な最大ツイート数（3200件だけど，念のため3000件に制限）
     API_get_max_tweet_num = 3000
     maxtweetnum = 1
     maxtweetdaynum = 1
@@ -33,6 +33,7 @@ def main_func(twitterID):
     display_new_date = ""
     display_old_date = ""
 
+    # ツイッターから渡される時間はグリニッジ時間なのでJSTに直す
     class Tweetdate:
         def __init__(self, datestr):
             for i in range(12):
@@ -49,7 +50,7 @@ def main_func(twitterID):
         def __str__(self):
             return "%04d-%02d-%02d %02d:%02d:%02d" % (self.ty, self.tm, self.td, self.th, self.tmin, self.ts)
 
-#get tweets
+# get tweets
     with open("secret.json") as f:
         secretjson = json.load(f)
 
@@ -60,7 +61,7 @@ def main_func(twitterID):
         return "4_error in getting tweets: " + str(err.response_data)
     print("nowpage: %d, %dth Tweet" % (nowpage, len(apiresults)))
     print(Tweetdate(apiresults[len(apiresults) - 1]['created_at']).strtodatetime().strftime("%Y-%m-%d %H:%M:%S"))
-#analize
+# analize
     displayID = ("@" + twitterID)
     i = 0
     before_resultcount = 0
@@ -117,7 +118,7 @@ def main_func(twitterID):
             break
     display_check_num = ("Recent %d tweets are checked" % (checknum))
 
-#display
+# display
     templist = [np.max(tweetnum[a]) for a in range(7)]
     templist.extend([1.0])
     maxtweetnum = max(templist)
@@ -131,7 +132,7 @@ def main_func(twitterID):
 
     fig = plt.gcf()
     a = plt.gca();
-#ヒートマップ
+# heat map
     a.cla()
     plt.sca(a)
     plt.imshow(plotarray, cmap="hot", clim=(0.0, maxtweetnum))
@@ -143,7 +144,7 @@ def main_func(twitterID):
     plt.ylabel("Time")
     plt.savefig("result/" + twitterID + "_1.png")
 
-#棒グラフ
+# bar graph
     a.cla()
     plt.sca(a)
     plt.title(displayID+"\n"+display_check_num)
