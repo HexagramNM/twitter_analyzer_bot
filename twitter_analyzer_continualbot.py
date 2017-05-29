@@ -12,12 +12,16 @@ import traceback
 log_file = open("error_log.txt", "w")
 sys.stderr = log_file
 error_message = "@HexagramNM botにエラーが発生しました."
+long_time_message = "御無沙汰しております．最近調子のほうはいかがでしょうか？\n"\
++ "前回のご利用から約1か月（28日）が経過いたしましたので，"\
++ "自動的に分析させていただきました．"
 dm_text = "この度は当botをフォローしていただき，ありがとうございます．このbotがあなたにフォローを返すことで，"\
 + "鍵アカウントであるあなたも，botにリプライを飛ばすことによりbotの機能を利用いただけます．"\
 + "ただし，次のデメリットがございます．\n"\
 + "デメリット：このbotを通して，あなたのツイッターの頻度といった情報が漏れてしまいます．\n"\
 + "デメリットを承諾して，当botを利用する際は，このDMでフォローを返して良いということをお伝えください．"\
 + "確認次第，手動でフォローを返させていただきます．"
+error_message_send = False
 
 try:
     with open("secret.json") as f:
@@ -53,7 +57,7 @@ try:
         if not(follower in processed_follower):
             not_processed_follower.extend([str(follower)])
 
-    if (len(not_processed_follower) > 0):
+    if len(not_processed_follower) > 0:
         follower_details = t.users.lookup(user_id=",".join(not_processed_follower), include_entities=True)
         for detail in follower_details:
             if detail['protected'] == True:
@@ -66,21 +70,24 @@ try:
         follower_file.write(str(follower) + "\n")
     follower_file.close()
 #tweet analysis activate
+
     ni_file = open("processed_newest_id.txt", "r")
     newest_id = int(ni_file.readline())
     ni_file.close()
     tweets = t.statuses.mentions_timeline(count=200, since_id=newest_id, include_entities=True, trim_user=False)
     tweets.reverse()
+    fa = open('account_history.txt')
+    today_execute = False
+    line_all_list = fa.readlines()
+    fa.close()
     for tweet in tweets:
         replyerID = tweet['user']['screen_name']
+        replyerIDnum = tweet['user']['id']
         now_date = datetime.now()
-        fa = open('account_history.txt')
-        today_execute = False
-        line_all_list = fa.readlines()
         i = 0
         for line in line_all_list:
             line = line.strip("\n")
-            line_list = line.rsplit(" ", 2)
+            line_list = line.rsplit(" ", 3)
             if replyerID == line_list[0]:
                 this_account_num = i
                 if now_date.date() == datetime.strptime(line_list[1], "%Y-%m-%d--%H-%M-%S").date():
@@ -88,7 +95,6 @@ try:
                 break
             i += 1
         this_account_num = i
-        fa.close()
         if today_execute:
             status = "@" + replyerID + " すでに今日分析しております．（分析は1日1回までです．）\n"\
             + "以下のリンクが今日の結果です．\n" + "https://twitter.com/twianaNM_bot/status/" + line_list[2] + "\n" + now_date.strftime("%Y-%m-%d %H:%M:%S")
@@ -108,9 +114,9 @@ try:
                 id_string = t.statuses.update(status=status, in_reply_to_screen_name=replyerID, media_ids=",".join([id_pic1, id_pic2]))['id_str']
 
                 if (this_account_num < len(line_all_list)):
-                    line_all_list[this_account_num] = replyerID + " " + now_date.strftime("%Y-%m-%d--%H-%M-%S") + " " + id_string +"\n"
+                    line_all_list[this_account_num] = replyerID + " " + now_date.strftime("%Y-%m-%d--%H-%M-%S") + " " + id_string + " " + str(replyerIDnum) + "\n"
                 else:
-                    line_all_list.extend(replyerID + " " + now_date.strftime("%Y-%m-%d--%H-%M-%S") + " " + id_string + "\n")
+                    line_all_list.extend(replyerID + " " + now_date.strftime("%Y-%m-%d--%H-%M-%S") + " " + id_string + " " + str(replyerIDnum) + "\n")
                 fa = open("account_history.txt", "w")
                 fa.writelines(line_all_list)
                 fa.close()
@@ -126,7 +132,9 @@ try:
         ni_file.close()
 except:
     sys.stderr.write(traceback.format_exc())
-    t.statuses.update(status=error_message + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),\
-    in_reply_to_screen_name="@HexagramNM")
+    if not error_message_send:
+        t.statuses.update(status=error_message + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),\
+        in_reply_to_screen_name="@HexagramNM")
+        error_message_send = True
 
 log_file.close()
