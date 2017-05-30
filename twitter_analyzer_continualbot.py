@@ -104,17 +104,13 @@ try:
                                 pic2_data = pic2_file.read()
                             id_pic2 = pic_upload.media.upload(media=pic2_data)["media_id_string"]
                             id_string = t.statuses.update(status=status, in_reply_to_screen_name=replyerID, media_ids=",".join([id_pic1, id_pic2]))['id_str']
-
-                            if (this_account_num < len(line_all_list)):
-                                line_all_list[this_account_num] = replyerID + " " + now_date.strftime("%Y-%m-%d--%H-%M-%S") + " " + id_string + " " + str(replyerIDnum) + "\n"
-                            else:
-                                line_all_list.extend(replyerID + " " + now_date.strftime("%Y-%m-%d--%H-%M-%S") + " " + id_string + " " + str(replyerIDnum) + "\n")
+                            line_all_list[this_account_num] = replyerID + " " + now_date.strftime("%Y-%m-%d--%H-%M-%S") + " " + id_string + " " + str(replyerIDnum) + "\n"
                             fa = open("account_history.txt", "w")
                             fa.writelines(line_all_list)
                             fa.close()
                             time.sleep(1)
                         now_processed_account.extend([replyerID])
-                        break
+                    break
                 i += 1
 
 #specifying analyze
