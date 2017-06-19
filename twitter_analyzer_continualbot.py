@@ -125,7 +125,7 @@ try:
     for tweet in tweets:
         replyerID = tweet['user']['screen_name']
         today_execute = False
-        if replyerID in now_processed_account:
+        if (replyerID in now_processed_account) or (replyerID == "twianaNM_bot"):
             newest_id = int(tweet['id_str'])
             print(str(newest_id))
             time.sleep(1)
