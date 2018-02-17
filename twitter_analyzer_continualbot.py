@@ -9,7 +9,7 @@ from datetime import date, datetime, timedelta
 import sys
 import traceback
 
-log_file = open("error_log.txt", "w")
+log_file = open("error_log.txt", "a")
 sys.stderr = log_file
 error_message = "@HexagramNM botにエラーが発生しました."
 long_time_message = "御無沙汰しております．\n"\
