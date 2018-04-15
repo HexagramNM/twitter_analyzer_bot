@@ -63,7 +63,6 @@ def main_func(twitterID):
     print(Tweetdate(apiresults[len(apiresults) - 1]['created_at']).strtodatetime().strftime("%Y-%m-%d %H:%M:%S"))
 # analize
     displayID = ("@" + twitterID)
-    i = 0
     before_resultcount = 0
     while True:
         now_max_id = apiresults[len(apiresults)-1]['id']
@@ -85,7 +84,16 @@ def main_func(twitterID):
         else:
             break
     before_resultcount = len(apiresults)
+    i = 0
+    display_new_date = ""
+    display_old_date = ""
     while True:
+        if i >= before_resultcount:
+            if (display_new_date != ""):
+                display_old_date = ("The oldest checked tweet date: " + str(Tweetdate(apiresults[before_resultcount - 1]['created_at']).strtodatetime()))
+            else:
+                display_new_date = ("This account has not tweeted for %d days." % (dayrange))
+            break
         s = apiresults[i]['created_at']
         if ((today.date()-Tweetdate(s).strtodatetime().date()).days < 1):
             i += 1
@@ -110,12 +118,7 @@ def main_func(twitterID):
         tweetdaynum[(today.date()-Tweetdate(s).strtodatetime().date()).days-1] += 1
         checknum += 1
         i += 1
-        if i >= before_resultcount:
-            if (display_new_date != ""):
-                display_old_date = ("The oldest checked tweet date: " + str(Tweetdate(apiresults[before_resultcount - 1]['created_at']).strtodatetime()))
-            else:
-                display_new_date = ("This account has not tweeted for %d days." % (dayrange))
-            break
+
     display_check_num = ("Recent %d tweets are checked" % (checknum))
 
 # display
