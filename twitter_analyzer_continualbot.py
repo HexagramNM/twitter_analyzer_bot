@@ -15,12 +15,12 @@ error_message = "@HexagramNM botにエラーが発生しました."
 long_time_message = "御無沙汰しております．\n"\
 + "前回のご利用から約1か月が経過いたしましたので，"\
 + "自動的に分析させていただきました．"
-dm_text = "この度は当botをフォローしていただき，ありがとうございます．このbotがあなたにフォローを返すことで，"\
-+ "鍵アカウントであるあなたも，botにリプライを飛ばすことによりbotの機能を利用いただけます．"\
-+ "ただし，次のデメリットがございます．\n"\
-+ "デメリット：このbotを通して，あなたのツイッターの頻度といった情報が漏れてしまいます．\n"\
-+ "デメリットを承諾して，当botを利用する際は，このDMでフォローを返して良いということをお伝えください．"\
-+ "確認次第，手動でフォローを返させていただきます．"
+#dm_text = "この度は当botをフォローしていただき，ありがとうございます．このbotがあなたにフォローを返すことで，"\
+#+ "鍵アカウントであるあなたも，botにリプライを飛ばすことによりbotの機能を利用いただけます．"\
+#+ "ただし，次のデメリットがございます．\n"\
+#+ "デメリット：このbotを通して，あなたのツイッターの頻度といった情報が漏れてしまいます．\n"\
+#+ "デメリットを承諾して，当botを利用する際は，このDMでフォローを返して良いということをお伝えください．"\
+#+ "確認次第，手動でフォローを返させていただきます．"
 error_message_send = False
 now_processed_account = []
 
@@ -61,10 +61,12 @@ try:
     if len(not_processed_follower) > 0:
         follower_details = t.users.lookup(user_id=','.join(not_processed_follower), include_entities=True)
         for detail in follower_details:
-            if detail['protected'] == True:
+            t.friendships.create(user_id=detail['id'], follow=False)
+            #DM警告機能OFF
+            '''if detail['protected'] == True:
                 t.direct_messages.new(user_id=detail['id'], text=dm_text)
             else:
-                t.friendships.create(user_id=detail['id'], follow=False)
+                t.friendships.create(user_id=detail['id'], follow=False)'''
 
     follower_file = open("processed_follower.txt", "w")
     for follower in follower_list:
