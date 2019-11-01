@@ -32,46 +32,25 @@ try:
     t = twitter.Twitter(auth=t_auth)
     pic_upload = twitter.Twitter(auth=t_auth, domain="upload.twitter.com")
 #follower process
-    follower_file = open("processed_follower.txt", "r")
-    processed_follower_file = follower_file.readlines()
-    follower_file.close()
-    processed_follower = []
-    for follower in processed_follower_file:
-        processed_follower.extend([int(follower.strip('\n'))])
-    follower_list = []
-    before_follower_count = 0
     follower_list = t.followers.ids(screen_name="twianaNM_bot", stringify_id=True, count = 5000)['ids']
     follow_list = t.friends.ids(screen_name="twianaNM_bot", stringify_id=True, count=5000)['ids']
     for follow in follow_list:
         if not(follow in follower_list):
             t.friendships.destroy(user_id=follow)
-#    while True:
-#        follower_list.extend(follower_result['ids'])
-#        if before_follower_count >= len(follower_list):
-#            break
-#        else:
-#            before_follower_count = len(follower_list)
-#        follower_result = t.followers.ids(screen_name="twianaNM_bot", stringify_id=True, count = 5000, cursor=follower_result['next_cursor'])
 
     not_processed_follower = []
     for follower in follower_list:
-        if not follower in processed_follower:
+        if not follower in follow_list:
             not_processed_follower.extend([str(follower)])
 
-    if len(not_processed_follower) > 0:
-        follower_details = t.users.lookup(user_id=','.join(not_processed_follower), include_entities=True)
-        for detail in follower_details:
-            t.friendships.create(user_id=detail['id'], follow=False)
-            #DM警告機能OFF
-            '''if detail['protected'] == True:
-                t.direct_messages.new(user_id=detail['id'], text=dm_text)
-            else:
-                t.friendships.create(user_id=detail['id'], follow=False)'''
+    try:
+        if len(not_processed_follower) > 0:
+            follower_details = t.users.lookup(user_id=','.join(not_processed_follower), include_entities=True)
+            for detail in follower_details:
+                t.friendships.create(user_id=detail['id'], follow=False)
+    except:
+        ""
 
-    follower_file = open("processed_follower.txt", "w")
-    for follower in follower_list:
-        follower_file.write(str(follower) + "\n")
-    follower_file.close()
 #tweet analysis activate
     follow_strID_list = []
     for follow_strID in follow_list:
@@ -186,6 +165,9 @@ try:
         ni_file.close()
 except:
     sys.stderr.write(traceback.format_exc())
+    sys.stderr.write("-------------------------------------------------------\n")
+    sys.stderr.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
+    sys.stderr.write("-------------------------------------------------------\n\n")
     if not error_message_send:
         t.statuses.update(status=error_message + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),\
         in_reply_to_screen_name="@HexagramNM")
